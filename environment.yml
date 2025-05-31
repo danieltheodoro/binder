@@ -17,6 +17,5 @@ dependencies:
   - lua
   - php
   - perl
-  - kotlin
   - pip:
       - octave_kernel
