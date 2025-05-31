@@ -39,14 +39,15 @@ apt-get install -y curl git unzip build-essential pkg-config libzmq3-dev \
     php-cli php-pear perl cpanminus luarocks lua5.3 lua5.3-dev \
     libmagic-dev zlib1g-dev libgmp-dev libtinfo-dev libsqlite3-dev || true
 
-# --------------------
-# Rust (evcxr)
-# --------------------
-echo "⚙️ Instalando kernel do Rust..."
-curl https://sh.rustup.rs -sSf | sh -s -- -y || true
-source $HOME/.cargo/env || true
-cargo install evcxr_jupyter || true
-evcxr_jupyter --install || true
+echo "📦 Registrando kernel fake de Rust..."
+mkdir -p $HOME/.local/share/jupyter/kernels/rust
+cat <<EOF > $HOME/.local/share/jupyter/kernels/rust/kernel.json
+{
+  "argv": ["bash", "-c", "rustc {connection_file} && ./main"],
+  "display_name": "Rust (wrapper)",
+  "language": "rust"
+}
+EOF
 
 # Zig (via wrapper)
 echo "⚙️ Registrando kernel fake do Zig..."
