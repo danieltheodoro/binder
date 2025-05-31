@@ -13,12 +13,6 @@ mkdir -p ~/.local/share/jupyter/kernels/gophernotes
 cp -r kernel/* ~/.local/share/jupyter/kernels/gophernotes
 cd -
 
-# C# (dotnet interactive)
-echo "Instalando kernel do .NET (C#)..."
-dotnet tool install --global Microsoft.dotnet-interactive
-export PATH="$PATH:$HOME/.dotnet/tools"
-dotnet interactive jupyter install --path ~/.local/share/jupyter/kernels
-
 # Julia
 echo "Registrando kernel do Julia..."
 julia -e 'using IJulia; installkernel("Julia")'
