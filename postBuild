@@ -6,7 +6,7 @@ python3 -m bash_kernel.install
 
 # Kernel JavaScript
 npm install -g ijavascript
-ijsinstall --install=global
+ijsinstall --install=local
 
 # Kernel R
 Rscript -e "IRkernel::installspec(user = FALSE)"
