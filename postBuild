@@ -29,3 +29,60 @@ julia -e 'import Pkg; Pkg.add("IJulia"); using IJulia; installkernel("Julia")'
 
 echo "Registrando kernel do Octave..."
 python3 -m pip install --upgrade --force-reinstall octave_kernel
+
+#!/bin/bash
+set -e
+
+echo "🔧 Atualizando APT e instalando dependências..."
+apt-get update || true
+apt-get install -y curl git unzip build-essential pkg-config libzmq3-dev \
+    php-cli php-pear perl cpanminus luarocks lua5.3 lua5.3-dev \
+    libmagic-dev zlib1g-dev libgmp-dev libtinfo-dev libsqlite3-dev || true
+
+# --------------------
+# Rust (evcxr)
+# --------------------
+echo "⚙️ Instalando kernel do Rust..."
+curl https://sh.rustup.rs -sSf | sh -s -- -y || true
+source $HOME/.cargo/env || true
+cargo install evcxr_jupyter || true
+evcxr_jupyter --install || true
+
+# --------------------
+# Zig (via wrapper)
+# --------------------
+echo "⚙️ Registrando kernel fake do Zig..."
+mkdir -p /usr/local/share/jupyter/kernels/zig
+cat > /usr/local/share/jupyter/kernels/zig/kernel.json <<EOF
+{
+  "argv": ["bash", "-c", "zig run {connection_file}"],
+  "display_name": "Zig (wrapper)",
+  "language": "zig"
+}
+EOF
+
+# --------------------
+# PHP
+# --------------------
+echo "⚙️ Instalando kernel do PHP..."
+git clone https://github.com/Litipk/Jupyter-PHP-Installer.git /tmp/phpkernel
+cd /tmp/phpkernel && ./install.sh || true
+cd -
+
+# --------------------
+# Perl (IPerl)
+# --------------------
+echo "⚙️ Instalando kernel do Perl..."
+cpanm Devel::IPerl || true
+iperl install || true
+
+# --------------------
+# Lua (iLua)
+# --------------------
+echo "⚙️ Instalando kernel do Lua..."
+git clone https://github.com/FrigoEU/iLua.git /tmp/ilua
+cd /tmp/ilua && luarocks make || true
+./install.lua || true
+cd -
+
+echo "Todos os kernels possíveis foram processados."
