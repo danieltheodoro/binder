@@ -1,11 +1,17 @@
-name: binder-env
+name: multi-kernel-env
 channels:
   - conda-forge
+  - defaults
+  - r
 dependencies:
   - python=3.10
-  - jupyterlab
-  - ipykernel
   - pip
+  - nodejs
+  - bash_kernel
+  - r-base
+  - r-irkernel
+  - julia
+  - octave
   - pip:
-      - numpy
-      - matplotlib
+      - ijavascript
+      - octave_kernel
