@@ -12,7 +12,7 @@ echo "Registrando kernel do Octave..."
 python3 -m octave_kernel.install
 
 echo "Instalando e registrando kernel de JavaScript (ijavascript)..."
-npm install -g ijavascript
+npm install ijavascript
 ijsinstall --install=local
 
 echo "Registrando kernel de C++ (xeus-cling)..."
