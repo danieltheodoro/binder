@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Registrar kernel do Bash
+python3 -m bash_kernel.install
+
+# Registrar kernel do R
+R -e "install.packages('IRkernel', repos='http://cran.us.r-project.org'); IRkernel::installspec(user = FALSE)"
+
+# Registrar kernel do Julia
+julia -e 'using Pkg; Pkg.add("IJulia"); using IJulia; installkernel("Julia")'
+
+# Verificação final
+jupyter kernelspec list
