@@ -1,17 +1,13 @@
 name: multi-kernel-env
 channels:
   - conda-forge
-  - defaults
-  - r
 dependencies:
   - python=3.10
   - pip
-  - nodejs
   - bash_kernel
+  - xeus-cling  # C/C++ kernel
+  - cling
+  - nodejs
+  - julia
   - r-base
   - r-irkernel
-  - julia
-  - octave
-  - pip:
-      - ijavascript
-      - octave_kernel
