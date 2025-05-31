@@ -19,12 +19,21 @@ echo "Registrando kernel de C++ (xeus-cling)..."
 # Já vem registrado com conda, não precisa instalar manualmente
 
 echo "Instalando e registrando kernel de Go (gophernotes)..."
-git clone --depth=1 https://github.com/gopherdata/gophernotes.git /tmp/gophernotes
-cd /tmp/gophernotes
-mkdir -p ~/.local/share/jupyter/kernels/gophernotes
-cp -r kernel/* ~/.local/share/jupyter/kernels/gophernotes
-go install
-cd -
+
+# Instala o gophernotes via go install
+go install github.com/gopherdata/gophernotes@latest
+
+# Caminho do kernel instalado
+KERNEL_SRC=$(go env GOPATH)/pkg/mod/github.com/gopherdata/gophernotes@*/kernel
+
+# Caminho de destino do kernelspec
+KERNEL_DEST=~/.local/share/jupyter/kernels/gophernotes
+
+# Cria pasta de destino
+mkdir -p "$KERNEL_DEST"
+
+# Copia os arquivos do kernel
+cp -r $KERNEL_SRC/* "$KERNEL_DEST"
 
 echo "Instalando kernel de C# (dotnet interactive)..."
 dotnet tool install --global Microsoft.dotnet-interactive
