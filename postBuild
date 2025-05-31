@@ -13,12 +13,6 @@ mkdir -p ~/.local/share/jupyter/kernels/gophernotes
 cp -r kernel/* ~/.local/share/jupyter/kernels/gophernotes
 cd -
 
-# Java (IJava kernel)
-echo "Instalando IJava kernel..."
-git clone https://github.com/SpencerPark/IJava.git /tmp/IJava
-cd /tmp/IJava
-./gradlew installKernel --args="--user"
-cd -
 
 # R já vem configurado pelo conda + r-irkernel
 
