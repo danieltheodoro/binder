@@ -39,9 +39,19 @@ apt-get install -y curl git unzip build-essential pkg-config libzmq3-dev \
     php-cli php-pear perl cpanminus luarocks lua5.3 lua5.3-dev \
     libmagic-dev zlib1g-dev libgmp-dev libtinfo-dev libsqlite3-dev || true
 
-echo "📦 Registrando kernel fake de Rust..."
-mkdir -p $HOME/.local/share/jupyter/kernels/rust
-cat <<EOF > $HOME/.local/share/jupyter/kernels/rust/kernel.json
+#!/bin/bash
+set -eux
+
+# Diretório seguro para kernels no MyBinder
+KERNEL_DIR="$HOME/.local/share/jupyter/kernels"
+mkdir -p "$KERNEL_DIR"
+
+# --------------------
+# Rust (wrapper)
+# --------------------
+echo "🔧 Registrando kernel wrapper para Rust..."
+mkdir -p "$KERNEL_DIR/rust"
+cat <<EOF > "$KERNEL_DIR/rust/kernel.json"
 {
   "argv": ["bash", "-c", "rustc {connection_file} && ./main"],
   "display_name": "Rust (wrapper)",
@@ -49,11 +59,12 @@ cat <<EOF > $HOME/.local/share/jupyter/kernels/rust/kernel.json
 }
 EOF
 
-# Zig (via wrapper)
-echo "⚙️ Registrando kernel fake do Zig..."
-mkdir -p ~/.local/share/jupyter/kernels/zig
-
-cat > ~/.local/share/jupyter/kernels/zig/kernel.json <<EOF
+# --------------------
+# Zig (wrapper)
+# --------------------
+echo "🔧 Registrando kernel wrapper para Zig..."
+mkdir -p "$KERNEL_DIR/zig"
+cat <<EOF > "$KERNEL_DIR/zig/kernel.json"
 {
   "argv": ["bash", "-c", "zig run {connection_file}"],
   "display_name": "Zig (wrapper)",
@@ -62,27 +73,40 @@ cat > ~/.local/share/jupyter/kernels/zig/kernel.json <<EOF
 EOF
 
 # --------------------
-# PHP
+# Lua (wrapper)
 # --------------------
-echo "⚙️ Instalando kernel do PHP..."
-git clone https://github.com/Litipk/Jupyter-PHP-Installer.git /tmp/phpkernel
-cd /tmp/phpkernel && ./install.sh || true
-cd -
+echo "🔧 Registrando kernel wrapper para Lua..."
+mkdir -p "$KERNEL_DIR/lua"
+cat <<EOF > "$KERNEL_DIR/lua/kernel.json"
+{
+  "argv": ["lua", "{connection_file}"],
+  "display_name": "Lua (wrapper)",
+  "language": "lua"
+}
+EOF
 
 # --------------------
-# Perl (IPerl)
+# Perl (wrapper)
 # --------------------
-echo "⚙️ Instalando kernel do Perl..."
-cpanm Devel::IPerl || true
-iperl install || true
+echo "🔧 Registrando kernel wrapper para Perl..."
+mkdir -p "$KERNEL_DIR/perl"
+cat <<EOF > "$KERNEL_DIR/perl/kernel.json"
+{
+  "argv": ["perl", "{connection_file}"],
+  "display_name": "Perl (wrapper)",
+  "language": "perl"
+}
+EOF
 
 # --------------------
-# Lua (iLua)
+# PHP (wrapper)
 # --------------------
-echo "⚙️ Instalando kernel do Lua..."
-git clone https://github.com/FrigoEU/iLua.git /tmp/ilua
-cd /tmp/ilua && luarocks make || true
-./install.lua || true
-cd -
-
-echo "Todos os kernels possíveis foram processados."
+echo "🔧 Registrando kernel wrapper para PHP..."
+mkdir -p "$KERNEL_DIR/php"
+cat <<EOF > "$KERNEL_DIR/php/kernel.json"
+{
+  "argv": ["php", "{connection_file}"],
+  "display_name": "PHP (wrapper)",
+  "language": "php"
+}
+EOF
