@@ -9,6 +9,8 @@ dependencies:
   - nodejs
   - r-base
   - r-irkernel
+  - rust
+  - cargo
   - julia
   - octave
   - openjdk                # Para Java
