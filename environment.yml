@@ -5,13 +5,18 @@ dependencies:
   - python=3.10
   - pip
   - bash_kernel
-  - xeus-cling  # C++11, C++14, C++17 kernels
+  - xeus-cling
   - nodejs
   - r-base
   - r-irkernel
   - julia
   - octave
   - openjdk
+  - rust
+  - go
+  - dotnet-sdk
+  - ghc                 # Haskell compiler
+  - stack               # Haskell toolchain
   - pip:
       - ijavascript
       - octave_kernel
