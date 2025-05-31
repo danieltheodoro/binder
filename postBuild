@@ -27,6 +27,18 @@ echo "Instalando kernel de JavaScript (IJavascript)..."
 npm install -g ijavascript
 ijsinstall --install=local
 
+echo "Instalando kernel do Haskell..."
+apt-get update && apt-get install -y libtinfo-dev libsqlite3-dev zlib1g-dev
+curl -sSL https://get.haskellstack.org/ | sh
+stack install ihaskell
+ihaskell install --prefix=$(jupyter --data-dir)
+
+echo "Instalando kernel do Haskell..."
+apt-get update && apt-get install -y libtinfo-dev libsqlite3-dev zlib1g-dev
+curl -sSL https://get.haskellstack.org/ | sh
+stack install ihaskell
+ihaskell install --prefix=$(jupyter --data-dir)
+
 # Corrigindo permissões de kernels (se necessário)
 chmod -R 755 ~/.local/share/jupyter/kernels
 
