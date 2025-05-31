@@ -33,12 +33,6 @@ curl -sSL https://get.haskellstack.org/ | sh
 stack install ihaskell
 ihaskell install --prefix=$(jupyter --data-dir)
 
-echo "Instalando kernel do Haskell..."
-apt-get update && apt-get install -y libtinfo-dev libsqlite3-dev zlib1g-dev
-curl -sSL https://get.haskellstack.org/ | sh
-stack install ihaskell
-ihaskell install --prefix=$(jupyter --data-dir)
-
 # Corrigindo permissões de kernels (se necessário)
 chmod -R 755 ~/.local/share/jupyter/kernels
 
@@ -47,6 +41,3 @@ julia -e 'import Pkg; Pkg.add("IJulia"); using IJulia; installkernel("Julia")'
 
 echo "Registrando kernel do Octave..."
 python3 -m pip install --upgrade --force-reinstall octave_kernel
-
-# Abaixo: espaço reservado para kernels extras que não têm suporte oficial Binder ou precisam de workarounds
-# echo "Instalando kernel de Haskell / Swift / Kotlin / etc... (manual/custom build necessário)"
