@@ -5,9 +5,13 @@ dependencies:
   - python=3.10
   - pip
   - bash_kernel
-  - xeus-cling  # C/C++ kernel
-  - cling
+  - xeus-cling  # C++11, C++14, C++17 kernels
   - nodejs
-  - julia
   - r-base
   - r-irkernel
+  - julia
+  - octave
+  - openjdk
+  - pip:
+      - ijavascript
+      - octave_kernel
