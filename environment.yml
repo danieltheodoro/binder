@@ -11,7 +11,6 @@ dependencies:
   - r-irkernel
   - julia
   - octave
-  - openjdk
   - rust
   - go
   - lua
