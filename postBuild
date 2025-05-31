@@ -1,64 +1,96 @@
 #!/bin/bash
 set -eux
 
-# Instalação de kernels
+echo "Ativando ambiente conda..."
+source /srv/conda/etc/profile.d/conda.sh
+conda activate notebook
 
-# Bash
+echo "Registrando kernel de Bash..."
 python3 -m bash_kernel.install
 
-# IJavascript
+echo "Registrando kernel do Octave..."
+python3 -m octave_kernel.install
+
+echo "Instalando e registrando kernel de JavaScript (ijavascript)..."
 npm install -g ijavascript
 ijsinstall --install=local
-ijsinstall --install=local || true
 
-# Octave
-python3 -m octave_kernel.install || true
+echo "Registrando kernel de C++ (xeus-cling)..."
+# Já vem registrado com conda, não precisa instalar manualmente
 
-# R
-R -e "install.packages('IRkernel', repos='http://cran.us.r-project.org')" || true
-R -e "IRkernel::installspec(user = TRUE)" || true
-
-# Julia
-julia -e 'using Pkg; Pkg.add("IJulia")' || true
-
-# Kotlin
-python3 -m kotlin_kernel.install || true
-
-# Go (gophernotes)
-go install github.com/gopherdata/gophernotes@latest || true
+echo "Instalando e registrando kernel de Go (gophernotes)..."
+git clone --depth=1 https://github.com/gopherdata/gophernotes.git /tmp/gophernotes
+cd /tmp/gophernotes
 mkdir -p ~/.local/share/jupyter/kernels/gophernotes
-cp -r "$(go env GOPATH)/pkg/mod/github.com/gopherdata/gophernotes@*/kernel"/* ~/.local/share/jupyter/kernels/gophernotes || true
+cp -r kernel/* ~/.local/share/jupyter/kernels/gophernotes
+go install
+cd -
 
-# C# com dotnet interactive
-dotnet tool install --global Microsoft.dotnet-interactive || true
-export PATH="$PATH:$HOME/.dotnet/tools"
-yes | dotnet interactive jupyter install --path ~/.local/share/jupyter/kernels || true
+echo "Instalando kernel de C# (dotnet interactive)..."
+dotnet tool install --global Microsoft.dotnet-interactive
+export PATH="$PATH:/home/jovyan/.dotnet/tools"
+dotnet interactive jupyter install --path ~/.local/share/jupyter/kernels
 
-# Haskell
-stack install ihaskell || true
-ihaskell install --prefix ~/.local || true
+echo "Instalando kernel de Lua..."
+luarocks install lua-kernel
+python3 -m lua_kernel.install
 
-# OCaml
-opam install -y jupyter || true
+echo "Instalando kernel de PHP..."
+composer global require --dev thecodingmachine/jupyter-php-installer
+~/.composer/vendor/bin/jupyter-php-installer
+
+echo "Instalando kernel de TypeScript..."
+npm install -g itypescript
+its --install=local
+
+echo "Instalando kernel de Haskell..."
+git clone https://github.com/gibiansky/IHaskell.git /tmp/ihaskell
+cd /tmp/ihaskell
+stack install ihaskell
+ihaskell install --prefix ~/.local
+cd -
+
+echo "Instalando kernel de Swift..."
+git clone https://github.com/kylekristiansen/swift-jupyter.git /tmp/swift
+cd /tmp/swift
+./install.sh --user
+cd -
+
+echo "Instalando kernel de Dart..."
+git clone https://github.com/dart-lang/jupyter-dart.git /tmp/jupyter-dart
+cd /tmp/jupyter-dart
+pub get
+dart bin/jupyter.dart --install
+cd -
+
+echo "Instalando kernel de Nim..."
+nimble install jupyter
+jupyter kernelspec install ~/.nimble/pkgs/jupyter-*/kernelspec
+
+echo "Instalando kernel de Zig (experimental)..."
+# Nenhum kernel oficial disponível ainda
+
+echo "Instalando kernel de OCaml..."
+opam install jupyter
 eval $(opam env)
-jupyter kernelspec install --user $(opam var jupyter-share)/kernels/ocaml || true
+jupyter kernelspec install --name ocaml-jupyter "$(opam var share)/jupyter"
 
-# Elixir
-git clone https://github.com/pprzetacznik/IElixir.git || true
-cd IElixir
-mix deps.get || true
-MIX_ENV=prod mix compile || true
-mix install || true
-cd ..
+echo "Instalando kernel de F#..."
+dotnet tool install --global IfSharp
+export PATH="$PATH:/home/jovyan/.dotnet/tools"
+ifsharp --install
 
-# Swift (apenas local ou docker custom)
-echo "⚠️ Swift kernel não suportado oficialmente via Binder. Requer imagem customizada." || true
+echo "Instalando kernel de Smalltalk (feita com Pharo)..."
+git clone https://github.com/PolyMathOrg/GToolkit.git /tmp/gt
+# Requer passos manuais ou imagem Pharo com GToolkit
 
-# Dart
-echo "⚠️ Dart kernel requer setup extra. Ignorando no Binder." || true
+echo "Instalando kernel de Elixir..."
+mix archive.install hex IElixir
+ielixir install
 
-# PHP
-echo "⚠️ PHP kernel não suportado via Binder com conda/pip. Requer setup extra." || true
+echo "Instalando kernel de Rust (evcxr_jupyter)..."
+cargo install evcxr_jupyter
+~/.cargo/bin/evcxr_jupyter --install
 
-# Lua, Nim, Zig, Perl, F#, Typescript
-echo "⚠️ Estas linguagens requerem instalação e configuração de kernels customizados." || true
+echo "Finalizando..."
+jupyter kernelspec list
