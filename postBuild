@@ -1,13 +1,27 @@
 #!/bin/bash
+set -eux
 
-# Registrar kernel do Bash
+echo "Instalando kernel Bash..."
+pip install --quiet bash_kernel
 python3 -m bash_kernel.install
 
-# Registrar kernel do R
-R -e "install.packages('IRkernel', repos='http://cran.us.r-project.org'); IRkernel::installspec(user = FALSE)"
+echo "Instalando kernel R..."
+conda install --quiet --yes -c r r-irkernel
+Rscript -e "IRkernel::installspec(user = FALSE)"
 
-# Registrar kernel do Julia
+echo "Instalando kernel Julia..."
+apt-get update && apt-get install -y wget
+wget https://julialang-s3.julialang.org/bin/linux/aarch64/1.9/julia-1.9.4-linux-aarch64.tar.gz
+tar -xzf julia-1.9.4-linux-aarch64.tar.gz
+mv julia-1.9.4 /opt/julia
+ln -s /opt/julia/bin/julia /usr/local/bin/julia
 julia -e 'using Pkg; Pkg.add("IJulia"); using IJulia; installkernel("Julia")'
 
-# Verificação final
-jupyter kernelspec list
+echo "Instalando kernel JavaScript (Node.js)..."
+pip install --quiet ijavascript
+ijsinstall --spec-path=~/.local/share/jupyter/kernels
+
+echo "Instalando kernel Octave..."
+apt-get install -y octave
+pip install octave_kernel
+python3 -m octave_kernel.install
