@@ -5,18 +5,30 @@ dependencies:
   - python=3.10
   - pip
   - bash_kernel
-  - xeus-cling
+  - xeus-cling             # C++11, C++14, C++17
   - nodejs
   - r-base
   - r-irkernel
   - julia
   - octave
-  - openjdk
-  - rust
-  - go
-  - dotnet-sdk
-  - ghc                 # Haskell compiler
-  - stack               # Haskell toolchain
+  - openjdk                # Para Java
+  - rust                   # Para Rust kernel
+  - go                     # Para Go kernel (gophernotes precisa do Go toolchain)
+  - dotnet-sdk             # Para C#
+  - texinfo                # Necessário para o octave_kernel
+  - zeromq                 # Dependência para alguns kernels
+  - pkg-config             # Dependência para compilação de alguns kernels
   - pip:
-      - ijavascript
       - octave_kernel
+      - elixir_kernel
+      - ocaml-jupyter
+      - haskell-ihaskell
+      - swift-jupyter
+      - kotlin-jupyter
+      - dart_kernel
+      - nim_kernel
+      - zig_kernel
+      - fsharp_kernel
+      - php_kernel
+      - perl_kernel
+      - lua_kernel
