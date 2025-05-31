@@ -12,6 +12,7 @@ dependencies:
   - julia
   - octave
   - rust
+  - zig
   - go
   - lua
   - php
