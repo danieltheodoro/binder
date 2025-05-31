@@ -22,10 +22,17 @@ npm install -g ijavascript
 ijsinstall --install=local
 
 echo "Instalando kernel do Haskell..."
-apt-get update && apt-get install -y libtinfo-dev libsqlite3-dev zlib1g-dev
-curl -sSL https://get.haskellstack.org/ | sh
+apt-get update && apt-get install -y libtinfo-dev libsqlite3-dev libgmp-dev zlib1g-dev
+
+# Instala o stack diretamente sem sudo
+curl -sSL https://get.haskellstack.org/ | sh -s - -d /usr/local/bin
+
+# Continua a instalação normalmente
+git clone https://github.com/gibiansky/IHaskell.git /tmp/IHaskell
+cd /tmp/IHaskell
 stack install ihaskell
-ihaskell install --prefix=$(jupyter --data-dir)
+stack exec -- ihaskell install --prefix=/usr/local/share/jupyter/kernels
+cd -
 
 # Corrigindo permissões de kernels (se necessário)
 chmod -R 755 ~/.local/share/jupyter/kernels
