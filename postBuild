@@ -1,105 +1,41 @@
 #!/bin/bash
 set -eux
 
-echo "Ativando ambiente conda..."
-source /srv/conda/etc/profile.d/conda.sh
-conda activate notebook
-
-echo "Registrando kernel de Bash..."
+# Bash
 python3 -m bash_kernel.install
 
-echo "Registrando kernel do Octave..."
-python3 -m octave_kernel.install
-
-echo "Instalando e registrando kernel de JavaScript (ijavascript)..."
-npm install ijavascript
-ijsinstall --install=local
-
-echo "Registrando kernel de C++ (xeus-cling)..."
-# Já vem registrado com conda, não precisa instalar manualmente
-
+# Go (gophernotes)
 echo "Instalando e registrando kernel de Go (gophernotes)..."
+git clone --depth=1 https://github.com/gopherdata/gophernotes.git /tmp/gophernotes
+cd /tmp/gophernotes
+go install
+mkdir -p ~/.local/share/jupyter/kernels/gophernotes
+cp -r kernel/* ~/.local/share/jupyter/kernels/gophernotes
+cd -
 
-# Instala o gophernotes via go install
-go install github.com/gopherdata/gophernotes@latest
-
-# Caminho do kernel instalado
-KERNEL_SRC=$(go env GOPATH)/pkg/mod/github.com/gopherdata/gophernotes@*/kernel
-
-# Caminho de destino do kernelspec
-KERNEL_DEST=~/.local/share/jupyter/kernels/gophernotes
-
-# Cria pasta de destino
-mkdir -p "$KERNEL_DEST"
-
-# Copia os arquivos do kernel
-cp -r $KERNEL_SRC/* "$KERNEL_DEST"
-
-echo "Instalando kernel de C# (dotnet interactive)..."
+# C# (dotnet interactive)
+echo "Instalando kernel do .NET (C#)..."
 dotnet tool install --global Microsoft.dotnet-interactive
-export PATH="$PATH:/home/jovyan/.dotnet/tools"
+export PATH="$PATH:$HOME/.dotnet/tools"
 dotnet interactive jupyter install --path ~/.local/share/jupyter/kernels
 
-echo "Instalando kernel de Lua..."
-luarocks install lua-kernel
-python3 -m lua_kernel.install
+# Julia
+echo "Registrando kernel do Julia..."
+julia -e 'using IJulia; installkernel("Julia")'
 
-echo "Instalando kernel de PHP..."
-composer global require --dev thecodingmachine/jupyter-php-installer
-~/.composer/vendor/bin/jupyter-php-installer
-
-echo "Instalando kernel de TypeScript..."
-npm install -g itypescript
-its --install=local
-
-echo "Instalando kernel de Haskell..."
-git clone https://github.com/gibiansky/IHaskell.git /tmp/ihaskell
-cd /tmp/ihaskell
-stack install ihaskell
-ihaskell install --prefix ~/.local
+# Java (IJava kernel)
+echo "Instalando IJava kernel..."
+git clone https://github.com/SpencerPark/IJava.git /tmp/IJava
+cd /tmp/IJava
+./gradlew installKernel --args="--user"
 cd -
 
-echo "Instalando kernel de Swift..."
-git clone https://github.com/kylekristiansen/swift-jupyter.git /tmp/swift
-cd /tmp/swift
-./install.sh --user
-cd -
+# R já vem configurado pelo conda + r-irkernel
 
-echo "Instalando kernel de Dart..."
-git clone https://github.com/dart-lang/jupyter-dart.git /tmp/jupyter-dart
-cd /tmp/jupyter-dart
-pub get
-dart bin/jupyter.dart --install
-cd -
+# Node.js / JavaScript
+echo "Instalando kernel de JavaScript (IJavascript)..."
+npm install -g ijavascript
+ijsinstall --install=local
 
-echo "Instalando kernel de Nim..."
-nimble install jupyter
-jupyter kernelspec install ~/.nimble/pkgs/jupyter-*/kernelspec
-
-echo "Instalando kernel de Zig (experimental)..."
-# Nenhum kernel oficial disponível ainda
-
-echo "Instalando kernel de OCaml..."
-opam install jupyter
-eval $(opam env)
-jupyter kernelspec install --name ocaml-jupyter "$(opam var share)/jupyter"
-
-echo "Instalando kernel de F#..."
-dotnet tool install --global IfSharp
-export PATH="$PATH:/home/jovyan/.dotnet/tools"
-ifsharp --install
-
-echo "Instalando kernel de Smalltalk (feita com Pharo)..."
-git clone https://github.com/PolyMathOrg/GToolkit.git /tmp/gt
-# Requer passos manuais ou imagem Pharo com GToolkit
-
-echo "Instalando kernel de Elixir..."
-mix archive.install hex IElixir
-ielixir install
-
-echo "Instalando kernel de Rust (evcxr_jupyter)..."
-cargo install evcxr_jupyter
-~/.cargo/bin/evcxr_jupyter --install
-
-echo "Finalizando..."
-jupyter kernelspec list
+# Corrigindo permissões de kernels (se necessário)
+chmod -R 755 ~/.local/share/jupyter/kernels
