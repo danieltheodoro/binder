@@ -48,12 +48,11 @@ source $HOME/.cargo/env || true
 cargo install evcxr_jupyter || true
 evcxr_jupyter --install || true
 
-# --------------------
 # Zig (via wrapper)
-# --------------------
 echo "⚙️ Registrando kernel fake do Zig..."
-mkdir -p /usr/local/share/jupyter/kernels/zig
-cat > /usr/local/share/jupyter/kernels/zig/kernel.json <<EOF
+mkdir -p ~/.local/share/jupyter/kernels/zig
+
+cat > ~/.local/share/jupyter/kernels/zig/kernel.json <<EOF
 {
   "argv": ["bash", "-c", "zig run {connection_file}"],
   "display_name": "Zig (wrapper)",
