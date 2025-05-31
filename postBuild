@@ -1,62 +1,64 @@
 #!/bin/bash
 set -eux
 
+# Instalação de kernels
+
 # Bash
 python3 -m bash_kernel.install
 
+# IJavascript
+npm install -g ijavascript
+ijsinstall --install=local
+ijsinstall --install=local || true
+
 # Octave
-python3 -m octave_kernel.install
-
-# JavaScript
-ijsinstall --install=local || echo "⚠️ Falha ao instalar ijavascript"
-
-# Julia
-julia -e 'using Pkg; Pkg.add("IJulia")'
+python3 -m octave_kernel.install || true
 
 # R
-# Já instalado com r-irkernel
+R -e "install.packages('IRkernel', repos='http://cran.us.r-project.org')" || true
+R -e "IRkernel::installspec(user = TRUE)" || true
 
-# Scala (Almond)
-SCALA_VERSION=2.13.13
-ALMOND_VERSION=0.14.0
-curl -Lo coursier https://git.io/coursier-cli && chmod +x coursier
-./coursier bootstrap \
-  --standalone \
-  -r jitpack \
-  -i user \
-  -I user:sh.almond:scala-kernel-api_${SCALA_VERSION}:${ALMOND_VERSION} \
-  sh.almond:scala-kernel_${SCALA_VERSION}:${ALMOND_VERSION} \
-  -o almond
-./almond --install --user || true
+# Julia
+julia -e 'using Pkg; Pkg.add("IJulia")' || true
 
-# Java (IJava)
-curl -L -o ijava.zip https://github.com/SpencerPark/IJava/releases/latest/download/ijava-1.3.0.zip
-unzip -q ijava.zip -d ijava-installer
-python3 ijava-installer/install.py --user || echo "⚠️ Falha ao instalar IJava"
+# Kotlin
+python3 -m kotlin_kernel.install || true
 
-# Go
-GO111MODULE=on go install github.com/gopherdata/gophernotes@latest
-GOPATH_BIN=$(go env GOPATH)/bin
+# Go (gophernotes)
+go install github.com/gopherdata/gophernotes@latest || true
 mkdir -p ~/.local/share/jupyter/kernels/gophernotes
-cp -r ${GOPATH_BIN}/gophernotes ~/.local/share/jupyter/kernels/gophernotes/kernel
-cp ${GOPATH_BIN}/gophernotes/kernelspec/* ~/.local/share/jupyter/kernels/gophernotes/
+cp -r "$(go env GOPATH)/pkg/mod/github.com/gopherdata/gophernotes@*/kernel"/* ~/.local/share/jupyter/kernels/gophernotes || true
 
-# Rust
-cargo install evcxr_jupyter
-~/.cargo/bin/evcxr_jupyter --install
+# C# com dotnet interactive
+dotnet tool install --global Microsoft.dotnet-interactive || true
+export PATH="$PATH:$HOME/.dotnet/tools"
+yes | dotnet interactive jupyter install --path ~/.local/share/jupyter/kernels || true
 
-# C#
-dotnet tool install --global Microsoft.dotnet-interactive --version 1.0.513101
-~/.dotnet/tools/dotnet-interactive jupyter install --path ~/.local/share/jupyter/kernels || true
+# Haskell
+stack install ihaskell || true
+ihaskell install --prefix ~/.local || true
 
-# Haskell (IHaskell)
-stack upgrade --binary-only
-stack install ihaskell
-ihaskell install --stack || echo "⚠️ Falha ao instalar IHaskell"
+# OCaml
+opam install -y jupyter || true
+eval $(opam env)
+jupyter kernelspec install --user $(opam var jupyter-share)/kernels/ocaml || true
 
-# Smalltalk (GToolkit kernel)
-curl -L https://github.com/feenkcom/gtoolkit-jupyter/releases/latest/download/gtoolkit-jupyter-linux64.zip -o gtoolkit.zip
-unzip gtoolkit.zip -d gtoolkit
-gtoolkit/gtoolkit-jupyter --install
+# Elixir
+git clone https://github.com/pprzetacznik/IElixir.git || true
+cd IElixir
+mix deps.get || true
+MIX_ENV=prod mix compile || true
+mix install || true
+cd ..
 
-echo "✅ Todos os kernels foram instalados (com tolerância para falhas menores)."
+# Swift (apenas local ou docker custom)
+echo "⚠️ Swift kernel não suportado oficialmente via Binder. Requer imagem customizada." || true
+
+# Dart
+echo "⚠️ Dart kernel requer setup extra. Ignorando no Binder." || true
+
+# PHP
+echo "⚠️ PHP kernel não suportado via Binder com conda/pip. Requer setup extra." || true
+
+# Lua, Nim, Zig, Perl, F#, Typescript
+echo "⚠️ Estas linguagens requerem instalação e configuração de kernels customizados." || true
