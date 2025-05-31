@@ -21,19 +21,6 @@ echo "Instalando kernel de JavaScript (IJavascript)..."
 npm install -g ijavascript
 ijsinstall --install=local
 
-echo "Instalando kernel do Haskell..."
-
-# Corrigir permissões e atualizar pacotes
-apt-get update || true
-apt-get install -y curl libgmp-dev zlib1g-dev libtinfo-dev libsqlite3-dev
-
-# Baixar e extrair stack manualmente
-curl -sSL https://github.com/commercialhaskell/stack/releases/download/v2.15.3/stack-2.15.3-linux-x86_64.tar.gz | tar -xz
-
-# Mover binário para o path
-mv stack-2.15.3-linux-x86_64/stack /usr/local/bin/stack
-chmod +x /usr/local/bin/stack
-
 # Corrigindo permissões de kernels (se necessário)
 chmod -R 755 ~/.local/share/jupyter/kernels
 
