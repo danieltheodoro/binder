@@ -1,21 +1,34 @@
 #!/bin/bash
 set -eux
 
-echo "Instalando kernel do Bash..."
+# Bash
 python3 -m bash_kernel.install
 
-echo "Instalando kernel do Go (gophernotes)..."
+# Go (gophernotes)
+echo "Instalando e registrando kernel de Go (gophernotes)..."
 git clone --depth=1 https://github.com/gopherdata/gophernotes.git /tmp/gophernotes
 cd /tmp/gophernotes
+go install
 mkdir -p ~/.local/share/jupyter/kernels/gophernotes
 cp -r kernel/* ~/.local/share/jupyter/kernels/gophernotes
-go install
 cd -
 
-echo "Instalando kernel do .NET (C#)..."
-dotnet tool install --global Microsoft.dotnet-interactive
-export PATH="$PATH:/home/jovyan/.dotnet/tools"
-dotnet interactive jupyter install
+# Java (IJava kernel)
+echo "Instalando IJava kernel..."
+git clone https://github.com/SpencerPark/IJava.git /tmp/IJava
+cd /tmp/IJava
+./gradlew installKernel --args="--user"
+cd -
+
+# R já vem configurado pelo conda + r-irkernel
+
+# Node.js / JavaScript
+echo "Instalando kernel de JavaScript (IJavascript)..."
+npm install -g ijavascript
+ijsinstall --install=local
+
+# Corrigindo permissões de kernels (se necessário)
+chmod -R 755 ~/.local/share/jupyter/kernels
 
 echo "Registrando kernel do Julia..."
 julia -e 'import Pkg; Pkg.add("IJulia"); using IJulia; installkernel("Julia")'
