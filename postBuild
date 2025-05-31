@@ -1,14 +1,62 @@
 #!/bin/bash
 set -eux
 
-# Kernel Bash
+# Bash
 python3 -m bash_kernel.install
 
-# Kernel JavaScript
-npm install -g ijavascript
-ijsinstall --install=local
+# Octave
+python3 -m octave_kernel.install
 
-# Kernel R
-Rscript -e "IRkernel::installspec(user = FALSE)"
+# JavaScript
+ijsinstall --install=local || echo "⚠️ Falha ao instalar ijavascript"
 
-# Kernel Julia (já é detectado se instalado via conda-forge)
+# Julia
+julia -e 'using Pkg; Pkg.add("IJulia")'
+
+# R
+# Já instalado com r-irkernel
+
+# Scala (Almond)
+SCALA_VERSION=2.13.13
+ALMOND_VERSION=0.14.0
+curl -Lo coursier https://git.io/coursier-cli && chmod +x coursier
+./coursier bootstrap \
+  --standalone \
+  -r jitpack \
+  -i user \
+  -I user:sh.almond:scala-kernel-api_${SCALA_VERSION}:${ALMOND_VERSION} \
+  sh.almond:scala-kernel_${SCALA_VERSION}:${ALMOND_VERSION} \
+  -o almond
+./almond --install --user || true
+
+# Java (IJava)
+curl -L -o ijava.zip https://github.com/SpencerPark/IJava/releases/latest/download/ijava-1.3.0.zip
+unzip -q ijava.zip -d ijava-installer
+python3 ijava-installer/install.py --user || echo "⚠️ Falha ao instalar IJava"
+
+# Go
+GO111MODULE=on go install github.com/gopherdata/gophernotes@latest
+GOPATH_BIN=$(go env GOPATH)/bin
+mkdir -p ~/.local/share/jupyter/kernels/gophernotes
+cp -r ${GOPATH_BIN}/gophernotes ~/.local/share/jupyter/kernels/gophernotes/kernel
+cp ${GOPATH_BIN}/gophernotes/kernelspec/* ~/.local/share/jupyter/kernels/gophernotes/
+
+# Rust
+cargo install evcxr_jupyter
+~/.cargo/bin/evcxr_jupyter --install
+
+# C#
+dotnet tool install --global Microsoft.dotnet-interactive --version 1.0.513101
+~/.dotnet/tools/dotnet-interactive jupyter install --path ~/.local/share/jupyter/kernels || true
+
+# Haskell (IHaskell)
+stack upgrade --binary-only
+stack install ihaskell
+ihaskell install --stack || echo "⚠️ Falha ao instalar IHaskell"
+
+# Smalltalk (GToolkit kernel)
+curl -L https://github.com/feenkcom/gtoolkit-jupyter/releases/latest/download/gtoolkit-jupyter-linux64.zip -o gtoolkit.zip
+unzip gtoolkit.zip -d gtoolkit
+gtoolkit/gtoolkit-jupyter --install
+
+echo "✅ Todos os kernels foram instalados (com tolerância para falhas menores)."
