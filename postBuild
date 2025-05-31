@@ -1,35 +1,27 @@
 #!/bin/bash
 set -eux
 
-# Bash
+echo "Instalando kernel do Bash..."
 python3 -m bash_kernel.install
 
-# Go (gophernotes)
-echo "Instalando e registrando kernel de Go (gophernotes)..."
+echo "Instalando kernel do Go (gophernotes)..."
 git clone --depth=1 https://github.com/gopherdata/gophernotes.git /tmp/gophernotes
 cd /tmp/gophernotes
-go install
 mkdir -p ~/.local/share/jupyter/kernels/gophernotes
 cp -r kernel/* ~/.local/share/jupyter/kernels/gophernotes
+go install
 cd -
 
-# Julia
+echo "Instalando kernel do .NET (C#)..."
+dotnet tool install --global Microsoft.dotnet-interactive
+export PATH="$PATH:/home/jovyan/.dotnet/tools"
+dotnet interactive jupyter install
+
 echo "Registrando kernel do Julia..."
-julia -e 'using IJulia; installkernel("Julia")'
+julia -e 'import Pkg; Pkg.add("IJulia"); using IJulia; installkernel("Julia")'
 
-# Java (IJava kernel)
-echo "Instalando IJava kernel..."
-git clone https://github.com/SpencerPark/IJava.git /tmp/IJava
-cd /tmp/IJava
-./gradlew installKernel --args="--user"
-cd -
+echo "Registrando kernel do Octave..."
+python3 -m pip install --upgrade --force-reinstall octave_kernel
 
-# R já vem configurado pelo conda + r-irkernel
-
-# Node.js / JavaScript
-echo "Instalando kernel de JavaScript (IJavascript)..."
-npm install -g ijavascript
-ijsinstall --install=local
-
-# Corrigindo permissões de kernels (se necessário)
-chmod -R 755 ~/.local/share/jupyter/kernels
+# Abaixo: espaço reservado para kernels extras que não têm suporte oficial Binder ou precisam de workarounds
+# echo "Instalando kernel de Haskell / Swift / Kotlin / etc... (manual/custom build necessário)"
